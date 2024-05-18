@@ -288,6 +288,48 @@ class App(object):
             next(self._data_1)
             next(self._data_2)
 
+    # @route('/query')
+    # def handle_query(self, x):
+    #     """ Takes no arguments, and yields the current top of the book;  the
+    #         best bid and ask and their sizes
+    #     """
+    #     try:
+    #         t1, bids1, asks1 = next(self._current_book_1)
+    #         t2, bids2, asks2 = next(self._current_book_2)
+    #     except Exception as e:
+    #         print("error getting stocks...reinitalizing app")
+    #         self.__init__()
+    #         t1, bids1, asks1 = next(self._current_book_1)
+    #         t2, bids2, asks2 = next(self._current_book_2)
+    #     t = t1 if t1 > t2 else t2
+    #     print('Query received @ t%s' % t)
+    #     return [{
+    #         'id': x and x.get('id', None),
+    #         'stock': 'ABC',
+    #         'timestamp': str(t),
+    #         'top_bid': bids1 and {
+    #             'price': bids1[0][0],
+    #             'size': bids1[0][1]
+    #         },
+    #         'top_ask': asks1 and {
+    #             'price': asks1[0][0],
+    #             'size': asks1[0][1]
+    #         }
+    #     },
+    #         {
+    #             'id': x and x.get('id', None),
+    #             'stock': 'DEF',
+    #             'timestamp': str(t),
+    #             'top_bid': bids2 and {
+    #                 'price': bids2[0][0],
+    #                 'size': bids2[0][1]
+    #             },
+    #             'top_ask': asks2 and {
+    #                 'price': asks2[0][0],
+    #                 'size': asks2[0][1]
+    #             }
+    #         }]
+    
     @route('/query')
     def handle_query(self, x):
         """ Takes no arguments, and yields the current top of the book;  the
@@ -297,10 +339,14 @@ class App(object):
             t1, bids1, asks1 = next(self._current_book_1)
             t2, bids2, asks2 = next(self._current_book_2)
         except Exception as e:
-            print("error getting stocks...reinitalizing app")
-            self.__init__()
-            t1, bids1, asks1 = next(self._current_book_1)
-            t2, bids2, asks2 = next(self._current_book_2)
+            print("Error:", e)
+            print("Error occurred while getting data points from order books")
+            # You can add more detailed logging or debugging information here
+            # For example, printing the traceback or relevant variables
+            import traceback
+            traceback.print_exc()
+            return []  # Return an empty list or handle the error as appropriate
+
         t = t1 if t1 > t2 else t2
         print('Query received @ t%s' % t)
         return [{
@@ -316,19 +362,20 @@ class App(object):
                 'size': asks1[0][1]
             }
         },
-            {
-                'id': x and x.get('id', None),
-                'stock': 'DEF',
-                'timestamp': str(t),
-                'top_bid': bids2 and {
-                    'price': bids2[0][0],
-                    'size': bids2[0][1]
-                },
-                'top_ask': asks2 and {
-                    'price': asks2[0][0],
-                    'size': asks2[0][1]
-                }
-            }]
+        {
+            'id': x and x.get('id', None),
+            'stock': 'DEF',
+            'timestamp': str(t),
+            'top_bid': bids2 and {
+                'price': bids2[0][0],
+                'size': bids2[0][1]
+            },
+            'top_ask': asks2 and {
+                'price': asks2[0][0],
+                'size': asks2[0][1]
+            }
+        }]
+
 
 
 ################################################################################
